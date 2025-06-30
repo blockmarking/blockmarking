@@ -1,0 +1,199 @@
+/*!***************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[7].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[7].use[3]!./src/app/components/footer/Footer.module.css ***!
+  \***************************************************************************************************************************************************************************************************************************************************************************************/
+.Footer_footer__sW3w7 {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background-color: #003b46;
+  color: #ffffff;
+  z-index: 1000;
+  padding: 10px 32px;
+  box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.Footer_content__FzzbG {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-direction: column;
+  max-width: 1500px;
+  margin: 0 auto;
+}
+
+.Footer_footer__sW3w7 p {
+  margin: 0;
+  font-size: 14px;
+}
+
+.Footer_socialLinks__m9eRo {
+  list-style: none;
+  padding: 0;
+  margin-top: 10px;
+}
+
+.Footer_socialLinks__m9eRo li {
+  display: inline-block;
+  margin-right: 10px;
+}
+
+.Footer_socialLinks__m9eRo li:last-child {
+  margin-right: 0;
+}
+
+.Footer_socialLinks__m9eRo img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+
+.Footer_socialLinks__m9eRo a {
+  text-decoration: none;
+  color: #fff;
+}
+
+.Footer_socialLinks__m9eRo a:hover {
+  opacity: 0.8;
+}
+
+/*!***************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[7].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[7].use[3]!./src/app/components/header/Header.module.css ***!
+  \***************************************************************************************************************************************************************************************************************************************************************************************/
+.Header_header__Wtiot {
+  padding: 20px 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background-color: #003b46;
+  padding: 20px 32px;
+}
+
+.Header_container__7dcF2 {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0 auto;
+  max-width: 1500px;
+}
+
+.Header_nav__6_zh4 {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.Header_navLinks__PjZhW {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.Header_navLinks__PjZhW li {
+  margin-right: 20px;
+}
+
+.Header_navLinks__PjZhW li:last-child {
+  margin-right: 0;
+}
+
+.Header_link__3bN_b {
+  color: #00cffd;
+  font-weight: 700;
+  font-size: 24px;
+  transition: all 0.3s;
+}
+
+.Header_link__3bN_b:hover {
+  color: #0091bf;
+}
+
+.Header_ctaBtn__V42Xu {
+  border: none;
+  font-size: 20px;
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: 5px;
+}
+
+.Header_inactivebtn__L97Iz {
+  background-color: #ff6f61;
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.Header_inactivebtn__L97Iz:hover {
+  background-color: #e65c50;
+}
+
+.Header_activebtn__RbKxm {
+  background-color: #008000;
+  color: #fff;
+  cursor: not-allowed;
+  opacity: 0.8;
+}
+
+/*!*******************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[7].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[7].use[3]!./src/app/page.module.css ***!
+  \*******************************************************************************************************************************************************************************************************************************************************************/
+.page_container__aoG4z {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background: linear-gradient(90deg, #00cffd 0%, #b57edc 100%);
+}
+
+.page_hero__SKW6o {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1500px;
+  margin: 0 auto 90px auto;
+  width: 100%;
+  flex-grow: 1;
+  padding: 0 20px;
+  gap: 20px;
+}
+
+.page_heading__ZPgh_ {
+  font-size: 60px;
+  line-height: 1.05;
+  margin-bottom: 3.2rem;
+}
+
+.page_description__86bsR {
+  font-size: 24px;
+  line-height: 1.6;
+  margin-bottom: 4.8rem;
+  margin-right: 20px;
+}
+
+.page_btns__SRG12 {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+
+.page_btn__VzVq_ {
+  background-color: #fff;
+  color: #000;
+  font-size: 20px;
+  font-weight: 600;
+  padding: 16px 32px;
+  border-radius: 9px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.page_btn__VzVq_:hover {
+  background-color: #ddd;
+}
+
+.page_buyBtn__Jh5QH {
+  background-color: #ff6f61;
+  color: #fff;
+  transition: all 0.3s;
+}
+
+.page_buyBtn__Jh5QH:hover {
+  background-color: #e65c50;
+}
+

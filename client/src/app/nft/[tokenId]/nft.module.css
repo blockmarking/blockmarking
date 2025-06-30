@@ -1,0 +1,227 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background: linear-gradient(90deg, #00cffd 0%, #b57edc 100%);
+}
+
+.innerContainer {
+  display: flex;
+  align-content: center;
+  justify-content: center;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.content {
+  background-color: #eee;
+  max-width: 1500px;
+  margin: 0 auto 90px auto;
+  box-shadow: 0 0 10px #ddd;
+  border-radius: 10px;
+  overflow: hidden;
+  padding-right: 10px;
+}
+
+.details {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 10px 16px 5px;
+}
+
+.stats {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.stat {
+  color: #e67e22;
+  width: 100%;
+}
+
+.stat .label {
+  font-size: 26px;
+  font-weight: bold;
+  margin-right: 10px;
+}
+
+.value {
+  font-size: 24px;
+  word-wrap: anywhere;
+}
+
+.nftSection {
+  margin-top: 20px;
+}
+
+.nftGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-gap: 15px;
+}
+
+.notConnected {
+  font-size: 40px;
+  font-weight: bold;
+  color: red;
+  text-align: center;
+  margin: 0 auto 90px auto;
+}
+
+.BtnCheck {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 24px;
+  font-weight: bold;
+  width: 640px;
+  padding: 20px 0;
+  background-color: #ff6f61;
+  color: #fff;
+  transition: all 0.3s;
+  margin-top: 16px;
+}
+
+.BtnCheck:hover {
+  background-color: #333333;
+}
+
+.Btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 24px;
+  font-weight: bold;
+  width: 640px;
+  padding: 20px 0;
+  background-color: #ff6f61;
+  color: #fff;
+  transition: all 0.3s;
+  margin-top: 16px;
+}
+
+.Btn:hover {
+  background-color: #333333;
+}
+
+.msg {
+  color: red;
+  font-weight: 500;
+  font-size: 20px;
+  text-align: center;
+}
+
+.msgAlert {
+  color: green;
+  font-weight: 500;
+  font-size: 32px;
+  text-align: center;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.spinner {
+  display: inline-block;
+  border: 4px solid #aaa;
+  border-left-color: #fff;
+  border-radius: 50%;
+  margin-right: 8px;
+  width: 24px;
+  height: 24px;
+  animation: spin 1s linear infinite;
+}
+
+.modal {
+  display: block;
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgb(0, 0, 0);
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+.modal-content {
+  background-color: #fefefe;
+  margin: 15% auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%;
+}
+
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7); /* Tạo nền tối cho modal */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modalContent {
+  background: white;
+  padding: 20px;
+  width: 80%;
+  max-height: 80%;
+  overflow-y: auto; /* Thêm thanh cuộn dọc nếu nội dung dài */
+  border-radius: 8px;
+  position: relative;
+}
+
+.closeBtn {
+  position: absolute;
+  top: 10px;
+  right: 20px;
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.transactionList {
+  max-height: 400px; /* Chiều cao tối đa của danh sách trước khi xuất hiện thanh cuộn */
+  overflow-y: auto; /* Thêm thanh cuộn nếu danh sách quá dài */
+}
+
+.transactionItem {
+  margin-bottom: 10px;
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+}
