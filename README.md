@@ -53,16 +53,20 @@ sudo apt install -y nodejs
 
 ```bash
 node -v   # nên là v18.x
+```
 
-# Bước 3: Cài thư viện từ package-lock.json
+#### Bước 3: Cài thư viện từ package-lock.json
+```
 npm ci     # hoặc npm install nếu chưa dùng CI
+```
 
-# Cụ thể:
+#### Cụ thể:
+```
 cd blockmarking
-npm ci # Cài package đúng phiên bản theo package-lock.json
+npm ci  # Cài package đúng phiên bản theo package-lock.json
 
 cd client
-npm ci # Cài package đúng phiên bản theo package-lock.json
+npm ci  # Cài package đúng phiên bản theo package-lock.json
 ```
 
 ### Chạy Next.js với `HOST=0.0.0.0` , Lúc này Next.js sẽ lắng nghe trên tất cả các IP, không chỉ `localhost`
@@ -79,7 +83,7 @@ sudo ufw allow 3000
 
 ### Truy cập từ bên ngoài
 
-Từ trình duyệt máy khác, truy cập: http://62.84.180.94:3000
+#### Từ trình duyệt máy khác, truy cập: http://62.84.180.94:3000
 
 #### WATERMARK
 
