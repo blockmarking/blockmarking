@@ -4,7 +4,7 @@ export async function fetchTransferEvents(contract) {
         const latestBlock = await provider.getBlockNumber();
 
         const BATCH_SIZE = 500; 
-        const startBlock = 8673700; // 🟢 Tùy chỉnh sát với block mint
+        const startBlock = 8661942; // 🟢 Tùy chỉnh sát với block mint
 
         let fromBlock = startBlock;
         const allEvents = [];

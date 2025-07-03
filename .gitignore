@@ -15,3 +15,8 @@ node_modules
 
 # Hardhat Ignition default folder for deployments against a local node
 ignition/deployments/chain-31337
+
+# next.js build output
+.next
+
+__tests__/

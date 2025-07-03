@@ -4,23 +4,27 @@ import { useParams, useRouter } from "next/navigation";
 import { useContext, useEffect, useState } from "react";
 import MarketplaceJson from "../../marketplace.json";
 import { ethers } from "ethers";
+import { Contract, id, zeroPadValue, toBeHex } from "ethers";
+//import { Contract, formatUnits } from "ethers"; // đảm bảo dùng từ ethers v6
 import axios from "axios";
 import GetIpfsUrlFromPinata from "@/app/utils";
 import Image from "next/image";
 import styles from "./nft.module.css";
 import Header from "@/app/components/header/Header";
 import Footer from "@/app/components/footer/Footer";
+import { fetchTransferEvents } from "@/lib/fetchTransferEvents";
+import { filterEventsByTokenId } from "@/lib/getNFTTransactions";
+
 
 //import download from 'downloadjs';
 
-
 export default function NFTPage() {
-  
+
   const params = useParams();
   const tokenId = params.tokenId;
   // ở đầu component NFTPage()
   const [metrics, setMetrics] = useState(null);
-  
+
   const [item, setItem] = useState();
   const [msg, setmsg] = useState();
   const [btnContent, setBtnContent] = useState("Buy NFT");
@@ -39,13 +43,12 @@ export default function NFTPage() {
   const [showModal, setShowModal] = useState(false);
   const [imageUrl, setImageUrl] = useState('');
 
- // Thêm useEffect để gọi getNFTTransactions khi signer thay đổi
-  useEffect(() => {
-    if (signer) {
-      getNFTTransactions();
-    }
-  }, [signer]);
-
+  // Thêm useEffect để gọi getNFTTransactions khi signer thay đổi, khong can dung vì da dung nut bam
+  // useEffect(() => {
+  //   if (signer) {
+  //     getNFTTransactions();
+  //   }
+  // }, [signer]);
 
   useEffect(() => {
     async function fetchData() {
@@ -98,54 +101,69 @@ export default function NFTPage() {
     return item;
   }
 
- // Hàm lấy lịch sử giao dịch của NFT
-  async function getNFTTransactions() {
-    setLoadingTransactions(true);
-    const contract = new ethers.Contract(
-      MarketplaceJson.address,
-      MarketplaceJson.abi,
-      signer
-    );
 
+  // // Hàm lấy lịch sử giao dịch NFT
+  async function getNFTTransactions() {
     try {
-      // Lấy sự kiện Transfer của tokenId
-      const transferEvents = await contract.queryFilter(
-        contract.filters.Transfer(null, null, tokenId)
+      const provider = new ethers.JsonRpcProvider(process.env.NEXT_PUBLIC_ALCHEMY_SEPOLIA_URL);
+      const contract = new Contract(
+        MarketplaceJson.address,
+        MarketplaceJson.abi,
+        provider
       );
 
-      // Chuyển đổi sự kiện thành thông tin giao dịch
-      const transactionsList = transferEvents.map((event) => {
-        return {
-          from: event.args.from,
-          to: event.args.to,
-          transactionHash: event.transactionHash,
-          blockNumber: event.blockNumber,
-        };
+      const allEvents = await fetchTransferEvents(contract);
+      console.log("📦 Tất cả sự kiện Transfer:", allEvents);
+
+      // ✅ Log và lọc rõ ràng theo tokenId
+      const filtered = allEvents.filter((e) => {
+        const eventTokenId = e.args.tokenId.toString();
+        const expectedTokenId = tokenId.toString();
+
+        console.log("🔍 So sánh tokenId:");
+        console.log("  tokenId từ URL:", expectedTokenId);
+        console.log("  tokenId từ event:", eventTokenId);
+
+        return eventTokenId === expectedTokenId;
       });
 
-      setTransactions(transactionsList); // Cập nhật danh sách giao dịch vào state
+      console.log("🎯 Sự kiện Transfer đúng token:", filtered);
 
-      // Cập nhật thông tin ví mint và ví đang sở hữu
-      if (transactionsList.length > 0) {
-		  
-		console.log("Mint Wallet:", transactionsList[0].to);  // Thêm vào đây
-		console.log("Wallet Holding:", transactionsList[transactionsList.length - 1].to);  // Them dòng này 
-		 
-        setMintAddress(transactionsList[0].to); // Ví mint là giao dịch đầu tiên (to)
-        setCurrentOwnerAddress(transactionsList[transactionsList.length - 1].to); // Ví sở hữu hiện tại là ví cuối cùng (to)
+      const transfers = filtered.map((event) => ({
+        from: event.args.from,
+        to: event.args.to,
+        tokenId: event.args.tokenId.toString(),
+        txHash: event.transactionHash,
+        blockNumber: event.blockNumber,
+      }));
+
+      setTransactions(transfers);
+
+      if (transfers.length > 0) {
+        const mintTx = transfers.find(tx => tx.from === "0x0000000000000000000000000000000000000000");
+        if (mintTx) {
+          setMintAddress(mintTx.to); // ví đầu tiên nhận token
+        } else {
+          setMintAddress("Không tìm thấy giao dịch mint");
+        }
+
+        setCurrentOwnerAddress(transfers[transfers.length - 1].to); // người đang sở hữu hiện tại
+      } else {
+        setMintAddress("Không có dữ liệu");
+        setCurrentOwnerAddress("Không có dữ liệu");
       }
 
+
     } catch (error) {
-      console.error("Error fetching NFT transactions:", error);
+      console.error("❌ Lỗi trong getNFTTransactions:", error.message);
+      setTransactions([]);
+      setMintAddress("Lỗi");
+      setCurrentOwnerAddress("Lỗi");
     }
-    setLoadingTransactions(false);
   }
 
-  
 
-   
-  
-  // checkWatermark() version2 theo route http://127.0.0.1:5000/api/v1/download_and_extract_logo bên Flask
+  // checkWatermark() version2 theo route ${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/download_and_extract_logo bên Flask
   async function checkWatermark() {
     try {
       const imageUrlFromIPFS = item?.image; // Lấy URL của ảnh từ metadata
@@ -158,7 +176,7 @@ export default function NFTPage() {
       }
 
       // Gửi yêu cầu đến Flask để tải và trích xuất logo từ ảnh
-      const response = await fetch('http://127.0.0.1:5000/api/v1/download_and_extract_logo', {
+      const response = await fetch('${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/download_and_extract_logo', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -172,24 +190,24 @@ export default function NFTPage() {
       if (response.status === 200) {
         alert(data.message);  // Thông báo thành công
 
-        const logoUrl = `http://127.0.0.1:5000${data.logo_path}`;  // URL của logo đã trích xuất
+        const logoUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}${data.logo_path}`;  // URL của logo đã trích xuất
         console.log("Link logo trích xuất:", logoUrl);  // Log để kiểm tra URL của logo
 
         setImageUrl(logoUrl); // Hiển thị logo sau khi trích xuất
 
 
-/////////////
+        /////////////
 
-         // --- Bước 2: lấy metrics từ endpoint evaluate ---
-    const evRes = await fetch('http://127.0.0.1:5000/api/v1/evaluate', { method: 'POST' });
-      if (!evRes.ok) {
-        const err = await evRes.json();
-        throw new Error(err.error || 'Failed to evaluate');
-      }
-      const evData = await evRes.json();
-      setMetrics(evData);
-/////////// hết bước 2 lấy metrics từ endpoint evaluate 
-        
+        // --- Bước 2: lấy metrics từ endpoint evaluate ---
+        const evRes = await fetch('${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/evaluate', { method: 'POST' });
+        if (!evRes.ok) {
+          const err = await evRes.json();
+          throw new Error(err.error || 'Failed to evaluate');
+        }
+        const evData = await evRes.json();
+        setMetrics(evData);
+        /////////// hết bước 2 lấy metrics từ endpoint evaluate 
+
         setShowModal(true);   // Hiển thị modal với logo
 
       } else {
@@ -200,7 +218,6 @@ export default function NFTPage() {
       alert("Lỗi khi kiểm tra watermark!");
     }
   }
-
 
 
   async function buyNFT() {
@@ -293,56 +310,51 @@ export default function NFTPage() {
                             <p><strong>* Copyright Information:</strong> {copyrightInfo}</p>
                             {/* Hiển Ảnh logo trích xuất */}
                             <img src={imageUrl} alt="Decoded Watermark" style={{ maxWidth: '100%', maxHeight: '100%', width: 'auto', height: 'auto' }} />
-                          
-                          
-                        
-	  
-	  
-	  {metrics && (
-  <div style={{ textAlign:'left', marginTop: '1rem' }}>
-    <h3>Evaluation Metrics</h3>
-    <ul>
-      {metrics.PSNR_color !== undefined && (
-        <li>PSNR (color): {metrics.PSNR_color.toFixed(4)}</li>
-      )}
-      {metrics.SSIM_color !== undefined && (
-        <li>SSIM (color): {metrics.SSIM_color.toFixed(4)}</li>
-      )}
-      {metrics.PSNR_alpha !== undefined && (
-        <li>PSNR (alpha): {metrics.PSNR_alpha.toFixed(4)}</li>
-      )}
-      {metrics.SSIM_alpha !== undefined && (
-        <li>SSIM (alpha): {metrics.SSIM_alpha.toFixed(4)}</li>
-      )}
-      {metrics.NCC_gradient !== undefined && (
-        <li>NCC (gradient): {metrics.NCC_gradient.toFixed(4)}</li>
-      )}
-      {metrics.BER !== undefined && (
-        <li>BER: {metrics.BER.toFixed(6)}</li>
-      )}
-      {metrics.NCC_watermark !== undefined && (
-        <li>NCC (watermark): {metrics.NCC_watermark.toFixed(6)}</li>
-      )}
-    </ul>
-  </div>
-)}
-                          
-                          
-                          
-                          
+
+                            {metrics && (
+                              <div style={{ textAlign: 'left', marginTop: '1rem' }}>
+                                <h3>Evaluation Metrics</h3>
+                                <ul>
+                                  {metrics.PSNR_color !== undefined && (
+                                    <li>PSNR (color): {metrics.PSNR_color.toFixed(4)}</li>
+                                  )}
+                                  {metrics.SSIM_color !== undefined && (
+                                    <li>SSIM (color): {metrics.SSIM_color.toFixed(4)}</li>
+                                  )}
+                                  {metrics.PSNR_alpha !== undefined && (
+                                    <li>PSNR (alpha): {metrics.PSNR_alpha.toFixed(4)}</li>
+                                  )}
+                                  {metrics.SSIM_alpha !== undefined && (
+                                    <li>SSIM (alpha): {metrics.SSIM_alpha.toFixed(4)}</li>
+                                  )}
+                                  {metrics.NCC_gradient !== undefined && (
+                                    <li>NCC (gradient): {metrics.NCC_gradient.toFixed(4)}</li>
+                                  )}
+                                  {metrics.BER !== undefined && (
+                                    <li>BER: {metrics.BER.toFixed(6)}</li>
+                                  )}
+                                  {metrics.NCC_watermark !== undefined && (
+                                    <li>NCC (watermark): {metrics.NCC_watermark.toFixed(6)}</li>
+                                  )}
+                                </ul>
+                              </div>
+                            )}
+
                           </div>
                         </div>
                       )}
 
                       {/* Nút "Check giao dịch của NFT" */}
                       <button
-                        onClick={() => {
-                          getNFTTransactions(); // Lấy giao dịch của NFT
-                          setShowTransactionsModal(true); // Mở modal hiển thị giao dịch
+                        onClick={async () => {
+                          setLoadingTransactions(true);         // ✅ Hiện loading
+                          await getNFTTransactions();           // 🧠 Gọi hàm truy vấn
+                          setLoadingTransactions(false);        // ✅ Tắt loading
+                          setShowTransactionsModal(true);       // ✅ Hiện modal
                         }}
                         className={styles.BtnCheck}
                       >
-                        Check Transactions
+                        {loadingTransactions ? "🔍 Checking..." : "Check Transactions"}
                       </button>
 
                       {/* Thêm modal hiển thị danh sách giao dịch với nút đóng và thanh cuộn */}
@@ -360,16 +372,16 @@ export default function NFTPage() {
                             <div className={styles.transactionList}>
 
                               <ul>
-                                {/* Hiển thị thông tin ví Mint và ví hiện đang sở hữu */}
-                                <p><strong>* Mint Wallet       :</strong> {mintAddress}</p>
-                                <p><strong>* Wallet Holding:</strong> {currentOwnerAddress}</p>
+                                <li><strong>* Mint Wallet:</strong> {mintAddress || "(chưa có dữ liệu)"}</li>
+                                <li><strong>* Wallet Holding:</strong> {currentOwnerAddress}</li>
+
                                 {transactions.map((tx, txIndex) => (
                                   <li key={txIndex} className={styles.transactionItem}>
-
                                     {renderTransaction(tx, txIndex)}
                                   </li>
                                 ))}
                               </ul>
+
                             </div>
                           </div>
                         </div>
@@ -408,13 +420,15 @@ export default function NFTPage() {
 
                       {/* Nút "Check giao dịch của NFT" */}
                       <button
-                        onClick={() => {
-                          getNFTTransactions(); // Lấy giao dịch của NFT
-                          setShowTransactionsModal(true); // Mở modal hiển thị giao dịch
+                        onClick={async () => {
+                          setLoadingTransactions(true);         // ✅ Hiện loading
+                          await getNFTTransactions();           // 🧠 Gọi hàm truy vấn, Lấy giao dịch của NFT
+                          setLoadingTransactions(false);        // ✅ Tắt loading
+                          setShowTransactionsModal(true);       // ✅ Hiện modal
                         }}
                         className={styles.BtnCheck}
                       >
-                        Check Transactions
+                        {loadingTransactions ? "🔍 Checking..." : "Check Transactions"}
                       </button>
 
                       {/* Thêm modal hiển thị danh sách giao dịch với nút đóng và thanh cuộn */}
@@ -444,7 +458,6 @@ export default function NFTPage() {
                           </div>
                         </div>
                       )}
-
 
                       <button
                         onClick={() => {

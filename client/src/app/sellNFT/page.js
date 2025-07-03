@@ -49,7 +49,7 @@ export default function SellNFT() {
         data.set("original_file", selectedFile); // Sử dụng file ảnh gốc
         data.set("logo_file", logoFile); // Gửi kèm file logo
 
-        const watermarkApiUrl = "http://127.0.0.1:5000/api/v1/add_watermark"; // Flask API để thêm watermark
+        const watermarkApiUrl = "${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/add_watermark"; // Flask API để thêm watermark
 
         // Gọi API Flask để thêm watermark
         setBtnContent("Processing watermark...");
@@ -72,7 +72,7 @@ export default function SellNFT() {
             console.log("Encoded image filename: ", encodedImageFilename);  // Debug để xem file encode
 
             // Lấy file encode vừa tạo từ Flask và upload lên IPFS
-            const fileResponse = await fetch(`http://127.0.0.1:5000/uploads/${encodedImageFilename}`);
+            const fileResponse = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/uploads/${encodedImageFilename}`);
             if (!fileResponse.ok) {
                 throw new Error(`Error fetching encoded image: ${encodedImageFilename}`);
             }
