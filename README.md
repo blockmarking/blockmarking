@@ -1,6 +1,6 @@
 # 💾 Demo blockmarking.com tại: http://62.84.180.94:3000
 
-🔹 Thư mục nftwab
+🔹 Thư mục blockmarking
 
 * Hardhat (blockchain) chính:
 
@@ -97,3 +97,6 @@ if __name__ == '__main__':
 ```bash  
 sudo ufw allow 5000
 ```
+
+## License
+This project is distributed under the `MIT`. See LICENSE for details.
